@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #  AllegroBot.py - A quick Bot that searches for the items you want to buy :-)
 #  Adding a '-p' followed by a number filters items that cost less or the same.
 
