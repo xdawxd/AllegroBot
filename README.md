@@ -11,5 +11,6 @@ pip install -r requirements.txt
 ### Usage:
 
 ```bash
-Open the terminal and type: 'AllegroBot.py <product> -p <price>' <-- optional
+Open the terminal and type: 'AllegroBot.py <product> -p <price>'
+-p followed by a price is optional.
 ```
