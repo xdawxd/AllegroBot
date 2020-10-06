@@ -1,7 +1,5 @@
 # AllegroBot
 
-## Description:
-
 ### Install:
 
 ```bash
