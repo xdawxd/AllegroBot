@@ -161,3 +161,5 @@ if not len(item_container) < 1:
 
 else:
     print('\nNo items match your search.')
+
+# TODO: Fix the img saving part.
