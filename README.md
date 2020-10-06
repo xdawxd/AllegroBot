@@ -1,3 +1,15 @@
 # AllegroBot
 
-Description.
+### Install:
+
+```bash
+git clone: https://github.com/xdawxd/AllegroBot.git
+cd AllegroBot
+pip install -r requirements.txt
+```
+
+### Usage:
+
+```bash
+Open the terminal and type: AllegroBot.py <product> -p <price> <-- optional
+```
