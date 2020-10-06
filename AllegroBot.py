@@ -12,6 +12,7 @@ from time import sleep
 
 search_for = ''
 item_list = []
+product_list_counter = []
 if len(sys.argv) > 1:
     search_for = ' '.join(sys.argv[1:])
 
@@ -99,6 +100,8 @@ if not len(item_container) < 1:
                             [item_2.text for item_2 in item_container[i].find_all('dd')]))
             data = f"Counter: {i}\nName: {name}\nPrice: {price}\nAdditional info: {str(info)[1:-1]}\nLink: {link}"
 
+            product_list_counter.append(str(i))
+
             # If the '-p' is passed into the terminal
             # Append only cheaper or the same price as passed
             try:
@@ -128,14 +131,16 @@ if not len(item_container) < 1:
             os.chdir(img_path)
 
             # Requesting an image source and saving it using 'wb' - write binary File mode
-            res = requests.get(img_src)
-            image_file = open(os.path.join(os.getcwd(), str(i) + '.jpg'), 'wb')
+            if str(i) in product_list_counter:
+                res = requests.get(img_src)
+                image_file = open(os.path.join(
+                    os.getcwd(), str(i) + '.jpg'), 'wb')
 
-            # Iterating over the resposne with 100000 bytes each time and saving it as a image.
-            for chunk in res.iter_content(100000):
-                image_file.write(chunk)
+                # Iterating over the response with 100000 bytes each time and saving it as a image.
+                for chunk in res.iter_content(100000):
+                    image_file.write(chunk)
 
-            image_file.close()
+                image_file.close()
 
             os.chdir('..')
 
