@@ -36,9 +36,9 @@ soup = BeautifulSoup(page.text, features='lxml')
 
 item_container = soup.findAll('div', {'class': 'mpof_ki myre_zn _9c44d_1Hxbq'})
 img_container = soup.findAll(
-    'div', {'class': 'mpof_ki myre_zn m389_6m m09p_k4 mse2_56 _9c44d_2Tos9'})
+    'div', {'class': 'mpof_ki myre_zn m389_6m mse2_56 _9c44d_2Tos9'})
 
-# Statement that checks if any items are found
+# Statement that checks if any items are found.
 if not len(item_container) < 1:
     if not os.path.exists(path):
         print(f'\nCreating a folder {os.path.basename(path)}...')
@@ -75,7 +75,6 @@ if not len(item_container) < 1:
                                                                               '%(levelname)s - '
                                                                               '%(''message)s')
 
-    print('\nSaving images...')
     for i in range(len(item_container)):
         try:
             price = item_container[i].find(
@@ -89,17 +88,38 @@ if not len(item_container) < 1:
             price = float(pattern.sub(
                 lambda m: rep[re.escape(m.group(0))], price))
 
-            # Variables that contain specific information about a product
+            # Variables that contain specific information about a product.
             name = item_container[i].find(
                 'a', class_='_w7z6o _uj8z7 meqh_en mpof_z0 mqu1_16 _9c44d_2vTdY').text
             link = item_container[i].find(
                 'a', class_='_w7z6o _uj8z7 meqh_en mpof_z0 mqu1_16 _9c44d_2vTdY').get('href')
-            img_src = img_container[i].img.get('data-src')
 
             # List of Tuples that contain additional info about the product, e.g. ('matrix': '30 inches').
             info = list(zip([item_1.text for item_1 in item_container[i].find_all('dt')],
                             [item_2.text for item_2 in item_container[i].find_all('dd')]))
             data = f"Counter: {i}\nName: {name}\nPrice: {price}\nAdditional info: {str(info)[1:-1]}\nLink: {link}"
+
+            # If the '-p' is passed into the terminal
+            # Append only cheaper or the same price as passed
+            try:
+                if price <= price_below:
+                    item_list.append(data)
+            except Exception as exc:
+                item_list.append(data)
+
+        # The class passed in the if statement is a class for sponsored items which we don't want
+        # So whenever the program runs into that div it skips it and logs the information to the .log file
+        except AttributeError as exc:
+            if soup.findAll('div', {'class': '_1y62o mpof_ki _9c44d_3SD3k'}):
+                logging.info(
+                    'The program found a sponsored item and skipped it.')
+        except Exception as exc:
+            logging.info(exc)
+
+    print('\nSaving images...')
+    for i in range(len(img_container)):
+        try:
+            img_src = img_container[i].img.get('data-src')
 
             # Creating a folder for the photos and using os.chdir() to change the current working directory.
             if not os.path.exists(img_path):
@@ -119,21 +139,6 @@ if not len(item_container) < 1:
 
             os.chdir('..')
 
-            # If the '-p' is passed into the terminal
-            # Append only cheaper or the same price as passed
-            try:
-                if price <= price_below:
-                    item_list.append(data)
-            except Exception as exc:
-                logging.info(exc)
-                item_list.append(data)
-
-        # The class passed in the if statement is a class for sponsored items which we don't want
-        # So whenever the program runs into that div it skips it and logs the information to the .log file
-        except AttributeError as exc:
-            if soup.findAll('div', {'class': '_1y62o mpof_ki _9c44d_3SD3k'}):
-                logging.info(
-                    'The program found a sponsored item and skipped it.')
         except Exception as exc:
             logging.info(exc)
 
