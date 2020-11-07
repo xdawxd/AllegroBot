@@ -119,6 +119,8 @@ if not len(item_container) < 1:
         except Exception as exc:
             logging.info(exc)
 
+    # TODO - Rewrite the image saving part as a function and run it with multiple threads.
+
     print('\nSaving images...')
     for i in range(len(img_container)):
         try:
@@ -130,7 +132,7 @@ if not len(item_container) < 1:
 
             os.chdir(img_path)
 
-            # Requesting an image source and saving it using 'wb' - write binary File mode
+            # Requesting an image source and saving it using 'wb' - write binary File mode.
             if str(i) in product_list_counter:
                 res = requests.get(img_src)
                 image_file = open(os.path.join(
@@ -161,5 +163,3 @@ if not len(item_container) < 1:
 
 else:
     print('\nNo items match your search.')
-
-# TODO: Fix the img saving part.
