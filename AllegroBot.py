@@ -12,7 +12,6 @@ from bs4 import BeautifulSoup
 
 search_for = ''
 item_list = []
-product_list_counter = []
 if len(sys.argv) > 1:
     search_for = ' '.join(sys.argv[1:])
 
@@ -73,7 +72,7 @@ if not len(item_container) < 1:
                                                                               '%(levelname)s - '
                                                                               '%(''message)s')
 
-    for i in range(len(1, item_container)):
+    for i in range(1, len(item_container)):
         try:
             price = item_container[i].find(
                 'span', class_='_1svub _lf05o').text[:-3]
@@ -95,20 +94,28 @@ if not len(item_container) < 1:
             # List of Tuples that contain additional info about the product, e.g. ('matrix': '30 inches').
             info = list(zip([item_1.text for item_1 in item_container[i].find_all('dt')],
                             [item_2.text for item_2 in item_container[i].find_all('dd')]))
-            data = f"Counter: {i}\nName: {name}\nPrice: {price}\nAdditional info: {str(info)[1:-1]}\nLink: {link}"
 
-            product_list_counter.append(str(i))
-
-            # If the '-p' is passed into the terminal
-            # append only cheaper or the same price as passed.
             try:
-                if price <= price_below:
+                percent = item_container[i].find('span', class_='_9c44d_1uHr2').getText()
+                discount = item_container[i].find('span', class_='mpof_uk mqu1_ae _9c44d_18kEF m9qz_yp _9c44d_2BSa0 '
+                                                                 '_9c44d_KrRuv').getText()
+
+                data = f"Counter: {i}\nName: {name}\nPrice: Discounted by {percent[1:]} from {discount} to {price}" \
+                       f"\nAdditional info: {str(info)[1:-1]}\nLink: {link}"
+
+                # If the '-p' is passed into the terminal
+                # Append only cheaper or the same price as passed
+                try:
+                    if price <= price_below:
+                        item_list.append(data)
+                except Exception:
                     item_list.append(data)
-            except Exception as exc:
-                item_list.append(data)
+
+            except Exception:
+                item_list.append(f"Counter: {i}\nName: {name}\nPrice: {price}\nAdditional info: {str(info)[1:-1]}\nLink: {link}")
 
         # The class passed in the if statement is a class for sponsored items which we don't want
-        # so whenever the program runs into that div it skips it and logs the information.
+        # So whenever the program runs into that div it skips it and logs the information to the .log file
         except AttributeError as exc:
             if soup.findAll('div', {'class': '_1y62o mpof_ki _9c44d_3SD3k'}):
                 logging.info(
