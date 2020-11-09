@@ -10,8 +10,3 @@ def convert_price_to_number(price):
 
     pattern = re.compile('|'.join(rep.keys()))
     return float(pattern.sub(lambda m: rep[re.escape(m.group(0))], price))
-
-
-discount = convert_price_to_number('499,00 zł')
-
-print(discount)
