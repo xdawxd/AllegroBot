@@ -1,23 +1,22 @@
 #  AllegroBot.py - A quick Bot that searches for the items you want to buy :-)
 #  Adding a '-p' followed by a number filters items that cost less or the same.
 
-import sys
 import os
 import re
-import send2trash
+import sys
+import time
 import logging
 import requests
+import send2trash
 from bs4 import BeautifulSoup
-from time import sleep
+from utils import convert_price_to_number
 
 search_for = ''
 item_list = []
-product_list_counter = []
 if len(sys.argv) > 1:
     search_for = ' '.join(sys.argv[1:])
 
 path = os.path.join(os.getcwd(), 'AllegroBot')
-img_path = os.path.join(path, 'Pictures')
 
 # Regular expression that strips the price from the terminal
 # and also removes the '-p number' from the search_for variable.
@@ -36,16 +35,14 @@ page = requests.get(url + search_for, headers=headers)
 soup = BeautifulSoup(page.text, features='lxml')
 
 item_container = soup.findAll('div', {'class': 'mpof_ki myre_zn _9c44d_1Hxbq'})
-img_container = soup.findAll(
-    'div', {'class': 'mpof_ki myre_zn m389_6m mse2_56 _9c44d_2Tos9'})
 
 # Statement that checks if any items are found.
 if not len(item_container) < 1:
     if not os.path.exists(path):
-        print(f'\nCreating a folder {os.path.basename(path)}...')
+        print(f'Creating folder {os.path.basename(path)}...')
         os.mkdir(path)
     os.chdir(path)
-    sleep(1)
+    time.sleep(1)
 
     filename = f"allegro_{search_for.replace(' ', '_')}.txt"
 
@@ -56,8 +53,8 @@ if not len(item_container) < 1:
             'There is already a file with the same name do you want to delete it? ')
 
         if f_exists.search(if_delete):
-            print('\nDeleting...')
-            sleep(1)
+            print('Deleting...')
+            time.sleep(1)
             for file in os.listdir(os.getcwd()):
                 logging.shutdown()
                 file_path = os.path.join(os.getcwd(), file)
@@ -69,25 +66,17 @@ if not len(item_container) < 1:
         else:
             quit()
 
-    print('\nCreating file: AllegroBot.log...')
-    sleep(1)
+    print('Creating file: AllegroBot.log...')
+    time.sleep(1)
     # Creating a logging file which saves all errors that the program ran into.
     logging.basicConfig(filename='AllegroBot.log', level=logging.INFO, format='%(asctime)s - '
                                                                               '%(levelname)s - '
                                                                               '%(''message)s')
 
-    for i in range(len(item_container)):
+    for i in range(1, len(item_container)):
         try:
-            price = item_container[i].find(
-                'span', class_='_1svub _lf05o').text[:-3]
-
-            # Part that is responsible for changing e.g. a str of 1 122,99 to a float of 1122.99
-            rep = {',': '.', ' ': ''}
-            rep = dict((re.escape(k), v) for k, v in rep.items())
-
-            pattern = re.compile('|'.join(rep.keys()))
-            price = float(pattern.sub(
-                lambda m: rep[re.escape(m.group(0))], price))
+            price = convert_price_to_number(item_container[i].find(
+                'span', class_='_1svub _lf05o').text[:-3])
 
             # Variables that contain specific information about a product.
             name = item_container[i].find(
@@ -98,17 +87,26 @@ if not len(item_container) < 1:
             # List of Tuples that contain additional info about the product, e.g. ('matrix': '30 inches').
             info = list(zip([item_1.text for item_1 in item_container[i].find_all('dt')],
                             [item_2.text for item_2 in item_container[i].find_all('dd')]))
-            data = f"Counter: {i}\nName: {name}\nPrice: {price}\nAdditional info: {str(info)[1:-1]}\nLink: {link}"
 
-            product_list_counter.append(str(i))
-
-            # If the '-p' is passed into the terminal
-            # Append only cheaper or the same price as passed
             try:
-                if price <= price_below:
+                percent = item_container[i].find('span', class_='_9c44d_1uHr2').text
+                discount = convert_price_to_number(item_container[i].find(
+                    'span', class_='mpof_uk mqu1_ae _9c44d_18kEF m9qz_yp _9c44d_2BSa0 _9c44d_KrRuv').text[:-3])
+
+                data = f"Counter: {i}\nName: {name}\nPrice: Discounted by {percent[1:]} from {discount} to {price}" \
+                       f"\nAdditional info: {str(info)[1:-1]}\nLink: {link}"
+
+                # If the '-p' is passed into the terminal
+                # Append only cheaper or the same price as passed
+                try:
+                    if price <= price_below:
+                        item_list.append(data)
+                except Exception:
                     item_list.append(data)
-            except Exception as exc:
-                item_list.append(data)
+
+            except Exception:
+                item_list.append(f"Counter: {i}\nName: {name}\nPrice: {price}\nAdditional info: {str(info)[1:-1]}"
+                                 f"\nLink: {link}")
 
         # The class passed in the if statement is a class for sponsored items which we don't want
         # So whenever the program runs into that div it skips it and logs the information to the .log file
@@ -119,47 +117,17 @@ if not len(item_container) < 1:
         except Exception as exc:
             logging.info(exc)
 
-    # TODO - Rewrite the image saving part as a function and run it with multiple threads.
-
-    print('\nSaving images...')
-    for i in range(len(img_container)):
-        try:
-            img_src = img_container[i].img.get('data-src')
-
-            # Creating a folder for the photos and using os.chdir() to change the current working directory.
-            if not os.path.exists(img_path):
-                os.mkdir(img_path)
-
-            os.chdir(img_path)
-
-            # Requesting an image source and saving it using 'wb' - write binary File mode.
-            if str(i) in product_list_counter:
-                res = requests.get(img_src)
-                image_file = open(os.path.join(
-                    os.getcwd(), str(i) + '.jpg'), 'wb')
-
-                # Iterating over the response with 100000 bytes each time and saving it as a image.
-                for chunk in res.iter_content(100000):
-                    image_file.write(chunk)
-
-                image_file.close()
-
-            os.chdir('..')
-
-        except Exception as exc:
-            logging.info(exc)
-
     # Creating a .txt file for the results.
-    sleep(1)
+    time.sleep(1)
     try:
-        with open(filename, 'w') as file:
+        with open(filename, 'w', encoding='utf-8') as file:
             for item in item_list:
                 file.write(item + os.linesep)
-            print(f"\nCreating a file: {filename}...")
-            sleep(1)
+            print(f"Creating file: {filename}...")
+            time.sleep(1)
     except FileNotFoundError as exc:
         logging.critical(exc)
-    print('\nDone!')
+    print('Done!')
 
 else:
-    print('\nNo items match your search.')
+    print('No items match your search.')
