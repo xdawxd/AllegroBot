@@ -129,7 +129,6 @@ if not len(item_container) < 1:
             # Creating a folder for the photos and using os.chdir() to change the current working directory.
             if not os.path.exists(img_path):
                 os.mkdir(img_path)
-
             os.chdir(img_path)
 
             # Requesting an image source and saving it using 'wb' - write binary File mode.
@@ -141,7 +140,6 @@ if not len(item_container) < 1:
                 # Iterating over the response with 100000 bytes each time and saving it as a image.
                 for chunk in res.iter_content(100000):
                     image_file.write(chunk)
-
                 image_file.close()
 
             os.chdir('..')
