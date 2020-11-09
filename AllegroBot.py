@@ -9,6 +9,7 @@ import logging
 import requests
 import send2trash
 from bs4 import BeautifulSoup
+from utils import convert_price_to_number
 
 search_for = ''
 item_list = []
@@ -74,16 +75,8 @@ if not len(item_container) < 1:
 
     for i in range(1, len(item_container)):
         try:
-            price = item_container[i].find(
-                'span', class_='_1svub _lf05o').text[:-3]
-
-            # Part that is responsible for changing e.g. a str of 1 122,99 to a float of 1122.99
-            rep = {',': '.', ' ': ''}
-            rep = dict((re.escape(k), v) for k, v in rep.items())
-
-            pattern = re.compile('|'.join(rep.keys()))
-            price = float(pattern.sub(
-                lambda m: rep[re.escape(m.group(0))], price))
+            price = convert_price_to_number(item_container[i].find(
+                'span', class_='_1svub _lf05o').text[:-3])
 
             # Variables that contain specific information about a product.
             name = item_container[i].find(
@@ -96,9 +89,9 @@ if not len(item_container) < 1:
                             [item_2.text for item_2 in item_container[i].find_all('dd')]))
 
             try:
-                percent = item_container[i].find('span', class_='_9c44d_1uHr2').getText()
-                discount = item_container[i].find('span', class_='mpof_uk mqu1_ae _9c44d_18kEF m9qz_yp _9c44d_2BSa0 '
-                                                                 '_9c44d_KrRuv').getText()
+                percent = item_container[i].find('span', class_='_9c44d_1uHr2').text
+                discount = convert_price_to_number(item_container[i].find(
+                    'span', class_='mpof_uk mqu1_ae _9c44d_18kEF m9qz_yp _9c44d_2BSa0 _9c44d_KrRuv').text[:-3])
 
                 data = f"Counter: {i}\nName: {name}\nPrice: Discounted by {percent[1:]} from {discount} to {price}" \
                        f"\nAdditional info: {str(info)[1:-1]}\nLink: {link}"
@@ -112,7 +105,8 @@ if not len(item_container) < 1:
                     item_list.append(data)
 
             except Exception:
-                item_list.append(f"Counter: {i}\nName: {name}\nPrice: {price}\nAdditional info: {str(info)[1:-1]}\nLink: {link}")
+                item_list.append(f"Counter: {i}\nName: {name}\nPrice: {price}\nAdditional info: {str(info)[1:-1]}"
+                                 f"\nLink: {link}")
 
         # The class passed in the if statement is a class for sponsored items which we don't want
         # So whenever the program runs into that div it skips it and logs the information to the .log file
@@ -126,7 +120,7 @@ if not len(item_container) < 1:
     # Creating a .txt file for the results.
     time.sleep(1)
     try:
-        with open(filename, 'w') as file:
+        with open(filename, 'w', encoding='utf-8') as file:
             for item in item_list:
                 file.write(item + os.linesep)
             print(f"Creating file: {filename}...")
