@@ -23,8 +23,9 @@ def value_strip(tag: str, searched: str):
         value = float(strip_re.search(str(searched)).group(2))
 
         return value
-
+    
     except AttributeError:
+        
         return None
 
 
