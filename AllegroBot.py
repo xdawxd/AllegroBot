@@ -18,6 +18,10 @@ if len(sys.argv) > 1:
 
 path = os.path.join(os.getcwd(), 'AllegroBot')
 
+# TODO -> implement an option for multiple pages, not just one.
+if value_strip('P', search_for):
+    pass
+
 # Part of code that scrapes the html from the website.
 url = 'https://allegro.pl/listing?string='
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/'
@@ -45,10 +49,11 @@ else:
 
 # If the file already exists, user can decide if he wants to delete it or not.
 if os.path.exists(os.path.join(path, filename)):
-    f_exists = re.compile(r'(y.*|sure|ok|okay|alright)', re.I)
+    f_exists = re.compile(r'(y.*|sure|o.*|alright)', re.I)
     if_delete = input(
         'There is already a file with the same name do you want to delete it? ')
 
+    # !!! Be careful at this moment if you want to delete a file it will wipe the whole AllegroBot folder. !!!
     if f_exists.search(if_delete):
         print('Deleting...')
         for file in os.listdir(os.getcwd()):

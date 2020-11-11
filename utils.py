@@ -18,10 +18,14 @@ def value_strip(tag: str, searched: str):
     """
     import re
 
-    strip_re = re.compile(rf'(-{tag}\s*)(\d*)')
-    value = float(strip_re.search(str(searched)).group(2))
+    try:
+        strip_re = re.compile(rf'(-{tag}\s*)(\d*)')
+        value = float(strip_re.search(str(searched)).group(2))
 
-    return value
+        return value
+
+    except AttributeError:
+        return None
 
 
 def search_strip(searched: str):
