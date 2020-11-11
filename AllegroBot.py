@@ -38,7 +38,10 @@ else:
     print('No items match your search.')
     quit()
 
-filename = f"allegro_{search_strip(search_for).replace(' ', '_')}.txt"
+if value_strip('p', search_for):
+    filename = f"allegro_{search_strip(search_for).replace(' ', '_')}_{str(value_strip('p', search_for))}.txt"
+else:
+    filename = f"allegro_{search_strip(search_for).replace(' ', '_')}.txt"
 
 # If the file already exists, user can decide if he wants to delete it or not.
 if os.path.exists(os.path.join(path, filename)):
