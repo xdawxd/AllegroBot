@@ -1,6 +1,6 @@
 #  AllegroBot.py - A quick Bot that searches for the items you want to buy :-)
 #  Adding a '-p' (lowercase) followed by a number filters items that cost less or the same.
-#  Adding a '-P' (UPPERCASE) followed by a page number searches through P pages.
+#  Adding a '-P' (UPPERCASE) followed by a page number searches through P pages. (NOT DONE YET)
 
 import os
 import re
