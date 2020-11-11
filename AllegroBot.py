@@ -75,7 +75,7 @@ logging.basicConfig(filename='AllegroBot.log', level=logging.INFO, format='%(asc
 
 for i in range(1, len(item_container)):
     try:
-        # Variables that contain specific information about a product.
+        # Variables that contain specific information about the product.
         name = item_container[i].find(
             'a', class_='_w7z6o _uj8z7 meqh_en mpof_z0 mqu1_16 _9c44d_2vTdY').text
         link = item_container[i].find(
@@ -107,7 +107,7 @@ for i in range(1, len(item_container)):
             item_list.append(data)
 
     # The class passed in the if statement is a class for sponsored items which we don't want
-    # So whenever the program runs into that div it skips it and logs the information to the .log file
+    # So whenever the program runs into that div it skips it and logs the information.
     except AttributeError as exc:
         if soup.findAll('div', {'class': '_1y62o mpof_ki _9c44d_3SD3k'}):
             logging.info(
