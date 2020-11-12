@@ -66,7 +66,7 @@ if os.path.exists(os.path.join(path, filename)):
                 if os.path.basename(file) == filename:
                     send2trash.send2trash(file_path)
             except Exception as exc:
-                print('Failed to delete %s. Reason: %s' % (file_path, exc))
+                print(f'Failed to delete {file_path}. Reason: {exc}')
     else:
         quit()
 
