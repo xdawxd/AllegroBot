@@ -106,7 +106,6 @@ for i in range(1, len(item_container)):
     except Exception as exc:
         logging.info(exc)
 
-# Creating a .txt file for the results.
 try:
     with open(filename, 'w', encoding='utf-8') as file:
         for item in item_list:
