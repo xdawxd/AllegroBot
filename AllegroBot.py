@@ -25,12 +25,12 @@ soup = BeautifulSoup(page.text, features='lxml')
 
 price_to = value_strip('p', search_for)
 page_to = value_strip('P', search_for)
-item_container = soup.findAll('div', {'class': 'mpof_ki myre_zn _9c44d_1Hxbq'})
 
+item_container = soup.findAll('div', {'class': 'mpof_ki myre_zn _9c44d_1Hxbq'})
 if page_to:
     for p_num in range(2, int(page_to)+1):
         url = 'https://allegro.pl/listing?string=' + search_strip(search_for) + f'&p={p_num}'
-        item_container += soup.findAll('div', {'class': 'mpof_ki myre_zn _9c44d_1Hxbq'})
+        item_container += item_container
 
 path = os.path.join(os.getcwd(), 'AllegroBot')
 if len(item_container) != 0:
