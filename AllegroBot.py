@@ -66,29 +66,25 @@ if os.path.exists(os.path.join(path, filename)):
         quit()
 
 print('Creating file: AllegroBot.log...')
-# Creating a logging file which saves all errors that the program ran into.
 logging.basicConfig(filename='AllegroBot.log', level=logging.INFO, format='%(asctime)s - '
                                                                           '%(levelname)s - '
                                                                           '%(message)s')
 
 for i in range(1, len(item_container)):
     try:
-        name = item_container[i].find(
-            'a', class_='_w7z6o _uj8z7 meqh_en mpof_z0 mqu1_16 _9c44d_2vTdY').text
-        link = item_container[i].find(
-            'a', class_='_w7z6o _uj8z7 meqh_en mpof_z0 mqu1_16 _9c44d_2vTdY').get('href')
-        price = convert_price_to_number(item_container[i].find(
-            'span', class_='_1svub _lf05o').text[:-3])
-
-        # List of Tuples that contain additional info about the product, e.g. ('matrix': '30 inches').
-        info = list(zip([item_1.text for item_1 in item_container[i].find_all('dt')],
+        name = item_container[i].find('a',
+            class_='_w7z6o _uj8z7 meqh_en mpof_z0 mqu1_16 _9c44d_2vTdY').text
+        link = item_container[i].find('a',
+            class_='_w7z6o _uj8z7 meqh_en mpof_z0 mqu1_16 _9c44d_2vTdY').get('href')
+        price = convert_price_to_number(item_container[i].find('span',
+            class_='_1svub _lf05o').text[:-3])
+        additional_info = list(zip([item_1.text for item_1 in item_container[i].find_all('dt')],
                         [item_2.text for item_2 in item_container[i].find_all('dd')]))
 
         try:
             percent = item_container[i].find('span', class_='_9c44d_1uHr2').text
-            discount = convert_price_to_number(item_container[i].find(
-                'span', class_='mpof_uk mqu1_ae _9c44d_18kEF m9qz_yp _9c44d_2BSa0 _9c44d_KrRuv').text[:-3])
-
+            discount = convert_price_to_number(item_container[i].find('span',
+                class_='mpof_uk mqu1_ae _9c44d_18kEF m9qz_yp _9c44d_2BSa0 _9c44d_KrRuv').text[:-3])
             data = f"Counter: {i}\nName: {name}\nPrice: Discounted by {percent[1:]} from {discount} to {price}" \
                    f"\nAdditional info: {str(info)[1:-1]}\nLink: {link}"
 
@@ -102,8 +98,7 @@ for i in range(1, len(item_container)):
         else:
             item_list.append(data)
 
-    # The class passed in the if statement is a class for sponsored items which we don't want
-    # So whenever the program runs into that div it skips it and logs the information to the .log file
+    # If a class of sponsored items appears
     except AttributeError as exc:
         if soup.findAll('div', {'class': '_1y62o mpof_ki _9c44d_3SD3k'}):
             logging.info(
