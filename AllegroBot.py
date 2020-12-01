@@ -11,17 +11,14 @@ import send2trash
 from bs4 import BeautifulSoup
 from utils import value_strip, search_strip, convert_price_to_number
 
+URL = 'https://allegro.pl/listing?string=' + search_strip(search_for)
+HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/'
+                         '537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36'}
+
 search_for = ''
 item_list = []
 if len(sys.argv) > 1:
     search_for = ' '.join(sys.argv[1:])
-
-path = os.path.join(os.getcwd(), 'AllegroBot')
-
-# Part of code that scrapes the html from the website.
-url = 'https://allegro.pl/listing?string=' + search_strip(search_for)
-headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/'
-                         '537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36'}
 
 page = requests.get(url, headers=headers)
 soup = BeautifulSoup(page.text, features='lxml')
@@ -35,7 +32,7 @@ if page_to:
         url = 'https://allegro.pl/listing?string=' + search_strip(search_for) + f'&p={p_num}'
         item_container += soup.findAll('div', {'class': 'mpof_ki myre_zn _9c44d_1Hxbq'})
 
-# Statement that checks if any items are found.
+path = os.path.join(os.getcwd(), 'AllegroBot')
 if len(item_container) != 0:
     if not os.path.exists(path):
         print(f'Creating folder {os.path.basename(path)}...')
@@ -50,7 +47,6 @@ if value_strip('p', search_for):
 else:
     filename = f"allegro_{search_strip(search_for).replace(' ', '_')}.txt"
 
-# If the file already exists, user can decide if he wants to delete it or not.
 if os.path.exists(os.path.join(path, filename)):
     f_exists = re.compile(r'(y.*|sure|o.*|alright)', re.I)
     if_delete = input(
@@ -62,7 +58,6 @@ if os.path.exists(os.path.join(path, filename)):
             logging.shutdown()
             file_path = os.path.join(os.getcwd(), file)
             try:
-                # Used send2trash package which speaks for its name and sends the files to the Recycle Bin.
                 if os.path.basename(file) == filename:
                     send2trash.send2trash(file_path)
             except Exception as exc:
@@ -78,7 +73,6 @@ logging.basicConfig(filename='AllegroBot.log', level=logging.INFO, format='%(asc
 
 for i in range(1, len(item_container)):
     try:
-        # Variables that contain specific information about a product.
         name = item_container[i].find(
             'a', class_='_w7z6o _uj8z7 meqh_en mpof_z0 mqu1_16 _9c44d_2vTdY').text
         link = item_container[i].find(
