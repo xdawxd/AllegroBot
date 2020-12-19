@@ -11,14 +11,14 @@ import send2trash
 from bs4 import BeautifulSoup
 from utils import value_strip, search_strip, convert_price_to_number
 
-URL = 'https://allegro.pl/listing?string=' + search_strip(search_for)
-HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/'
-                         '537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36'}
-
 search_for = ''
 item_list = []
 if len(sys.argv) > 1:
     search_for = ' '.join(sys.argv[1:])
+
+url = 'https://allegro.pl/listing?string=' + search_strip(search_for)
+headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/'
+                         '537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36'}
 
 page = requests.get(url, headers=headers)
 soup = BeautifulSoup(page.text, features='lxml')
@@ -77,7 +77,7 @@ for i in range(1, len(item_container)):
             class_='_w7z6o _uj8z7 meqh_en mpof_z0 mqu1_16 _9c44d_2vTdY').get('href')
         price = convert_price_to_number(item_container[i].find('span',
             class_='_1svub _lf05o').text[:-3])
-        additional_info = list(zip([item_1.text for item_1 in item_container[i].find_all('dt')],
+        info = list(zip([item_1.text for item_1 in item_container[i].find_all('dt')],
                         [item_2.text for item_2 in item_container[i].find_all('dd')]))
 
         try:
