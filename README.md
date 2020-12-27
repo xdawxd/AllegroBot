@@ -12,6 +12,6 @@ pip install -r requirements.txt
 
 ```bash
 Open the terminal and type: 'python AllegroBot.py <product> -p <price> -P <number of pages>'
--p is optional and by default does not have any limit in price.
--P is also optional and by default it takes 1 page.
+-p is optional and by default does not have any limit.
+-P is also optional. (default=1)
 ```
