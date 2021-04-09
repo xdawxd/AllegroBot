@@ -15,3 +15,9 @@ Open the terminal and type: 'python AllegroBot.py <product> -p <price> -P <numbe
 -p is optional and by default does not have any limit.
 -P is also optional. (default=1)
 ```
+
+### Status
+
+```bash
+Rewriting...
+```
